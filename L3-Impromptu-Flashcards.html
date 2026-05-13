@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Bugle: Level 3 Protocol</title>
+    <style>
+        :root {
+            --neon-pink: #ff2a6d;
+            --neon-blue: #05d9e8;
+            --neon-green: #39ff14;
+            --dark-bg: #01012b;
+            --card-bg: #0a0a3a;
+            --text-main: #e0f2fe;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-main);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            background-image: radial-gradient(circle at 50% 50%, #1a1a4a 0%, #01012b 100%);
+        }
+
+        h1 {
+            color: var(--neon-blue);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px var(--neon-blue);
+            margin-bottom: 20px;
+        }
+
+        .controls {
+            margin-bottom: 25px;
+        }
+
+        button {
+            background: transparent;
+            color: var(--text-main);
+            border: 2px solid var(--neon-pink);
+            padding: 12px 24px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(255, 42, 109, 0.5);
+            margin: 0 10px;
+        }
+
+        button:hover {
+            background: var(--neon-pink);
+            box-shadow: 0 0 20px var(--neon-pink);
+        }
+
+        .flashcard-container {
+            display: flex;
+            width: 95%;
+            max-width: 1200px;
+            height: 320px;
+            background: var(--card-bg);
+            border-radius: 15px;
+            border: 2px solid #333;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            margin-bottom: 30px;
+        }
+
+        .pane {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .pane-left {
+            border-right: 4px dashed var(--neon-blue);
+            background: linear-gradient(135deg, rgba(5,217,232,0.1) 0%, transparent 100%);
+        }
+
+        .pane-middle {
+            border-right: 4px dashed var(--neon-pink);
+            background: linear-gradient(135deg, transparent 0%, rgba(255,42,109,0.05) 50%, transparent 100%);
+        }
+
+        .pane-right {
+            background: linear-gradient(135deg, transparent 0%, rgba(57,255,20,0.1) 100%);
+        }
+
+        .label {
+            font-size: 1rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .value {
+            font-size: 2.2rem;
+            font-weight: bold;
+            margin: 10px 0;
+            line-height: 1.2;
+        }
+
+        .topic-text { color: var(--neon-blue); text-shadow: 0 0 8px rgba(5,217,232,0.6); }
+        .stance-text { color: var(--neon-pink); text-shadow: 0 0 8px rgba(255,42,109,0.6); }
+        .perspective-text { color: var(--neon-green); text-shadow: 0 0 8px rgba(57,255,20,0.6); }
+
+        .icon {
+            font-size: 4rem;
+            margin-bottom: 10px;
+        }
+
+        .timer-container {
+            text-align: center;
+            background: rgba(0,0,0,0.4);
+            padding: 20px 50px;
+            border-radius: 15px;
+            border: 1px solid var(--neon-blue);
+        }
+
+        .timer-display {
+            font-size: 5rem;
+            font-weight: bold;
+            font-family: 'Courier New', Courier, monospace;
+            color: var(--neon-blue);
+            text-shadow: 0 0 15px var(--neon-blue);
+            margin-bottom: 20px;
+        }
+
+        .timer-btn {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 10px rgba(5,217,232,0.3);
+            font-size: 1rem;
+            padding: 8px 16px;
+        }
+
+        .timer-btn:hover {
+            background: var(--neon-blue);
+            color: var(--dark-bg);
+            box-shadow: 0 0 20px var(--neon-blue);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>The Bugle: Level 3 Protocol</h1>
+
+    <div class="controls">
+        <button onclick="drawCard()">Draw Assignment</button>
+    </div>
+
+    <div class="flashcard-container">
+        <div class="pane pane-left">
+            <div class="label">Headline Topic</div>
+            <div class="icon" id="topicIcon">❓</div>
+            <div class="value topic-text" id="topicText">Awaiting Assignment</div>
+        </div>
+        <div class="pane pane-middle">
+            <div class="label">Editorial Stance</div>
+            <div class="icon" id="stanceIcon">❓</div>
+            <div class="value stance-text" id="stanceText">Awaiting Assignment</div>
+        </div>
+        <div class="pane pane-right">
+            <div class="label">Perspective</div>
+            <div class="icon" id="perspectiveIcon">❓</div>
+            <div class="value perspective-text" id="perspectiveText">Awaiting Assignment</div>
+        </div>
+    </div>
+
+    <div class="timer-container">
+        <div class="label">Prep Time Remaining</div>
+        <div class="timer-display" id="timer">2:00</div>
+        <div>
+            <button class="timer-btn" onclick="startTimer()">Start</button>
+            <button class="timer-btn" onclick="pauseTimer()">Pause</button>
+            <button class="timer-btn" onclick="resetTimer()">Reset 120s</button>
+        </div>
+    </div>
+
+    <script>
+        const topics = [
+            { name: "Artificial Intelligence", icon: "🧠" },
+            { name: "Social Media", icon: "📱" },
+            { name: "Global Warming", icon: "🌍" },
+            { name: "School Bullying", icon: "⚠️" },
+            { name: "Modern Jobs", icon: "💼" }
+        ];
+
+        const stances = [
+            { name: "Positive Outlook", icon: "📈" },
+            { name: "Negative Impact", icon: "📉" },
+            { name: "Balanced Perspective", icon: "⚖️" },
+            { name: "Best-Case Scenario", icon: "✨" },
+            { name: "Worst-Case Scenario", icon: "🌪️" }
+        ];
+
+        const perspectives = [
+            { name: "Teenagers", icon: "🎒" },
+            { name: "Teachers", icon: "🍎" },
+            { name: "Governments", icon: "🏛️" },
+            { name: "Parents", icon: "👪" },
+            { name: "Personal Experience", icon: "👤" }
+        ];
+
+        function drawCard() {
+            const randomTopic = topics[Math.floor(Math.random() * topics.length)];
+            const randomStance = stances[Math.floor(Math.random() * stances.length)];
+            const randomPerspective = perspectives[Math.floor(Math.random() * perspectives.length)];
+
+            document.getElementById('topicText').innerText = randomTopic.name;
+            document.getElementById('topicIcon').innerText = randomTopic.icon;
+            
+            document.getElementById('stanceText').innerText = randomStance.name;
+            document.getElementById('stanceIcon').innerText = randomStance.icon;
+
+            document.getElementById('perspectiveText').innerText = randomPerspective.name;
+            document.getElementById('perspectiveIcon').innerText = randomPerspective.icon;
+
+            resetTimer(); 
+        }
+
+        // Timer Logic
+        let timeLeft = 120; // 2 minutes
+        let timerInterval = null;
+
+        function updateDisplay() {
+            let minutes = Math.floor(timeLeft / 60);
+            let seconds = timeLeft % 60;
+            document.getElementById('timer').innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            
+            // Turn red when time is low (15 seconds or less)
+            if (timeLeft <= 15) {
+                document.getElementById('timer').style.color = 'var(--neon-pink)';
+                document.getElementById('timer').style.textShadow = '0 0 15px var(--neon-pink)';
+            } else {
+                document.getElementById('timer').style.color = 'var(--neon-blue)';
+                document.getElementById('timer').style.textShadow = '0 0 15px var(--neon-blue)';
+            }
+        }
+
+        function startTimer() {
+            if (timerInterval) return; 
+            if (timeLeft === 0) return;
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateDisplay();
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            timeLeft = 120;
+            updateDisplay();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Bugle: Level 5 Master Protocol</title>
+    <style>
+        :root {
+            --neon-pink: #ff2a6d;
+            --neon-blue: #05d9e8;
+            --neon-green: #00ff9f;
+            --neon-purple: #b026ff;
+            --neon-orange: #ff9f00;
+            --dark-bg: #01012b;
+            --card-bg: #0a0a3a;
+            --text-main: #e0f2fe;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-main);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            background-image: radial-gradient(circle at 50% 50%, #1a1a4a 0%, #01012b 100%);
+        }
+
+        h1 {
+            color: var(--neon-blue);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px var(--neon-blue);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .controls {
+            margin-bottom: 20px;
+        }
+
+        button {
+            background: transparent;
+            color: var(--text-main);
+            border: 2px solid var(--neon-pink);
+            padding: 12px 24px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(255, 42, 109, 0.5);
+            margin: 0 10px;
+        }
+
+        button:hover {
+            background: var(--neon-pink);
+            box-shadow: 0 0 20px var(--neon-pink);
+        }
+
+        .flashcard-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 95%;
+            max-width: 1200px;
+            background: var(--card-bg);
+            border-radius: 15px;
+            border: 2px solid #333;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            margin-bottom: 30px;
+        }
+
+        .pane {
+            flex: 1 1 30%; /* 3 items per row on large screens */
+            min-width: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+            border: 1px dashed #444;
+        }
+
+        /* Gradients */
+        .pane-topic { background: linear-gradient(135deg, rgba(5,217,232,0.1) 0%, transparent 100%); }
+        .pane-stance { background: linear-gradient(135deg, transparent 0%, rgba(255,42,109,0.1) 100%); }
+        .pane-perspective { background: linear-gradient(135deg, transparent 0%, rgba(0,255,159,0.1) 100%); }
+        .pane-context { background: linear-gradient(135deg, rgba(176,38,255,0.1) 0%, transparent 100%); }
+        .pane-tools { background: linear-gradient(135deg, transparent 0%, rgba(255,159,0,0.1) 100%); }
+
+        .label {
+            font-size: 0.9rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+        }
+
+        .value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+
+        /* Neon Text Colors */
+        .topic-text { color: var(--neon-blue); text-shadow: 0 0 8px rgba(5,217,232,0.6); }
+        .stance-text { color: var(--neon-pink); text-shadow: 0 0 8px rgba(255,42,109,0.6); }
+        .perspective-text { color: var(--neon-green); text-shadow: 0 0 8px rgba(0,255,159,0.6); }
+        .context-text { color: var(--neon-purple); text-shadow: 0 0 8px rgba(176,38,255,0.6); }
+        .tools-text { color: var(--neon-orange); text-shadow: 0 0 8px rgba(255,159,0,0.6); }
+
+        .icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .timer-container {
+            text-align: center;
+            background: rgba(0,0,0,0.4);
+            padding: 15px 40px;
+            border-radius: 15px;
+            border: 1px solid var(--neon-blue);
+        }
+
+        .timer-display {
+            font-size: 4.5rem;
+            font-weight: bold;
+            font-family: 'Courier New', Courier, monospace;
+            color: var(--neon-blue);
+            text-shadow: 0 0 15px var(--neon-blue);
+            margin-bottom: 15px;
+        }
+
+        .timer-btn {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 10px rgba(5,217,232,0.3);
+            font-size: 0.9rem;
+            padding: 8px 16px;
+        }
+
+        .timer-btn:hover {
+            background: var(--neon-blue);
+            color: var(--dark-bg);
+            box-shadow: 0 0 20px var(--neon-blue);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>The Bugle: Level 5 Master Class</h1>
+
+    <div class="controls">
+        <button onclick="drawCard()">Draw Master Assignment</button>
+    </div>
+
+    <div class="flashcard-container">
+        <div class="pane pane-topic">
+            <div class="label">Headline Topic</div>
+            <div class="icon" id="topicIcon">❓</div>
+            <div class="value topic-text" id="topicText">Awaiting</div>
+        </div>
+        <div class="pane pane-stance">
+            <div class="label">Editorial Stance</div>
+            <div class="icon" id="stanceIcon">❓</div>
+            <div class="value stance-text" id="stanceText">Awaiting</div>
+        </div>
+        <div class="pane pane-perspective">
+            <div class="label">Perspective</div>
+            <div class="icon" id="perspectiveIcon">❓</div>
+            <div class="value perspective-text" id="perspectiveText">Awaiting</div>
+        </div>
+        <div class="pane pane-context">
+            <div class="label">Context</div>
+            <div class="icon" id="contextIcon">❓</div>
+            <div class="value context-text" id="contextText">Awaiting</div>
+        </div>
+        <div class="pane pane-tools">
+            <div class="label">Primary Tool</div>
+            <div class="icon" id="toolsIcon">❓</div>
+            <div class="value tools-text" id="toolsText">Awaiting</div>
+        </div>
+    </div>
+
+    <div class="timer-container">
+        <div class="label">Prep Time Remaining</div>
+        <div class="timer-display" id="timer">4:00</div>
+        <div>
+            <button class="timer-btn" onclick="startTimer()">Start</button>
+            <button class="timer-btn" onclick="pauseTimer()">Pause</button>
+            <button class="timer-btn" onclick="resetTimer()">Reset 4m</button>
+        </div>
+    </div>
+
+    <script>
+        const topics = [
+            { name: "Artificial Intelligence", icon: "🧠" },
+            { name: "Social Media", icon: "📱" },
+            { name: "Global Warming", icon: "🌍" },
+            { name: "School Bullying", icon: "⚠️" },
+            { name: "Modern Jobs", icon: "💼" }
+        ];
+
+        const stances = [
+            { name: "Positive Outlook", icon: "📈" },
+            { name: "Negative Impact", icon: "📉" },
+            { name: "Balanced View", icon: "⚖️" },
+            { name: "Best Case", icon: "✨" },
+            { name: "Worst Case", icon: "🌪️" }
+        ];
+
+        const perspectives = [
+            { name: "Teenagers", icon: "🛹" },
+            { name: "Teachers", icon: "🍎" },
+            { name: "Governments", icon: "🏛️" },
+            { name: "Parents", icon: "👪" },
+            { name: "Personal Experience", icon: "👤" }
+        ];
+
+        const contexts = [
+            { name: "School", icon: "🏫" },
+            { name: "Home", icon: "🏠" },
+            { name: "Online", icon: "🌐" },
+            { name: "The Future", icon: "🚀" },
+            { name: "The Past", icon: "⏳" }
+        ];
+
+        const tools = [
+            { name: "Technology", icon: "💻" },
+            { name: "Money / Funding", icon: "💰" },
+            { name: "Rules & Laws", icon: "📜" },
+            { name: "AI Systems", icon: "🤖" },
+            { name: "Co-operation", icon: "🤝" }
+        ];
+
+        function getRandomItem(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function drawCard() {
+            const topic = getRandomItem(topics);
+            const stance = getRandomItem(stances);
+            const perspective = getRandomItem(perspectives);
+            const context = getRandomItem(contexts);
+            const tool = getRandomItem(tools);
+
+            document.getElementById('topicText').innerText = topic.name;
+            document.getElementById('topicIcon').innerText = topic.icon;
+            
+            document.getElementById('stanceText').innerText = stance.name;
+            document.getElementById('stanceIcon').innerText = stance.icon;
+
+            document.getElementById('perspectiveText').innerText = perspective.name;
+            document.getElementById('perspectiveIcon').innerText = perspective.icon;
+
+            document.getElementById('contextText').innerText = context.name;
+            document.getElementById('contextIcon').innerText = context.icon;
+
+            document.getElementById('toolsText').innerText = tool.name;
+            document.getElementById('toolsIcon').innerText = tool.icon;
+
+            resetTimer(); 
+        }
+
+        // Timer Logic (240 seconds = 4 minutes)
+        let timeLeft = 240; 
+        let timerInterval = null;
+
+        function updateDisplay() {
+            let minutes = Math.floor(timeLeft / 60);
+            let seconds = timeLeft % 60;
+            document.getElementById('timer').innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            
+            // Turn pink/red when time is running out (under 30 seconds)
+            if (timeLeft <= 30) {
+                document.getElementById('timer').style.color = 'var(--neon-pink)';
+                document.getElementById('timer').style.textShadow = '0 0 15px var(--neon-pink)';
+            } else {
+                document.getElementById('timer').style.color = 'var(--neon-blue)';
+                document.getElementById('timer').style.textShadow = '0 0 15px var(--neon-blue)';
+            }
+        }
+
+        function startTimer() {
+            if (timerInterval) return; 
+            if (timeLeft === 0) return;
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateDisplay();
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            timeLeft = 240; // Reset to 4 minutes
+            updateDisplay();
+        }
+    </script>
+</body>
+</html>
